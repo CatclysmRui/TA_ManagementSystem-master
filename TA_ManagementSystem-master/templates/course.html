@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Course List</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Course name</th>
+            <th>Link</th>
+            <th>Link</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for course in courses %}
+            <tr>
+                <td>{{ course.subject }}{{ course.courseName }}</td>
+                <td>{{ course.title }}</td>
+                <td><a href="{% url 'duty_detail' id=course.id %}">View details/Duties</a></td>
+                <td><a href="{% url 'ta_list' id=course.id %}">select TA</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button><a href="{% url 'home' %}">back</a></button>
+{% endblock %}

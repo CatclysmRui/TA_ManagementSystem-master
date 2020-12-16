@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>select course</h1>
+    <form method="post" name="course" action="{% url 'rank_course' %}">{% csrf_token %}
+        <table border="0" width="1000">
+            <tr>
+                <td width="40%">
+                    <label><select style="width: 100%" multiple name="list1" size="12" onclick="showTADuty(document.course.list1)">
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">
+                                {{ course.subject }}{{ course.courseName }}&nbsp;{{ course.title }}&nbsp;{{ course.instructor.user.first_name }}&nbsp;{{ course.instructor.user.last_name }}</option>
+                        {% endfor %}
+                    </select></label>
+                </td>
+                <td width="20%" align="center">
+                    <input type="button" value="right"
+                           onclick="moveCourseOption(document.course.list1, document.course.list2)"><br><br>
+                    <input type="button" value="left"
+                           onclick="moveCourseOption(document.course.list2, document.course.list1)">
+                </td>
+                <td width="40%">
+                    <label><select style="width: 100%" multiple name="list2" size="12"
+                                   ondblclick="moveCourseOption(document.course.list2, document.course.list1)"></select></label>
+                </td>
+                <td>
+                    <input type="button" value="up" onclick="changepos(list2,-1)"><br><br>
+                    <input type="button" value="down" onclick="changepos(list2,1)">
+                </td>
+            </tr>
+        </table>
+        <p><label><input type="text" name="ranking" size="40" hidden></label></p>
+        <p>
+            <button type="submit">submit</button>
+        </p>
+    </form>
+    <pre id="taduty"></pre>
+{% endblock %}

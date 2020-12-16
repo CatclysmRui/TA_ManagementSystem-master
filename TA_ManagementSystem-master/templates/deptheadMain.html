@@ -1,0 +1,247 @@
+{% load static %}
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<meta http-equiv="expires" content="-1" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Department head page</title>
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' />
+    <script src='{% static "js/jquery.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+    <script src='{% static "js/jui/jquery-ui.js" %}'></script>
+    <style>
+        .container-fluid{
+            margin-top: 70px;
+        }
+    </style>
+        <script>
+            var taID;
+		window.onload = function (){
+			$(".TAList").hide();
+			}
+
+
+
+function vis(){
+	$(".TAList").toggle();
+
+	}
+
+function seeTAInfo(){
+            var emailInfo = $("#email"+taID).val();
+           genderArray =  emailInfo.split("#");
+           $("#email"+taID).val(genderArray[0]);
+           if(genderArray[1]==1){
+                gender = "male"
+           }
+           else{
+               gender = "fmale"
+           }
+           $("#gender"+taID).val(gender);
+            $("#mymodal"+taID).modal();
+
+        }
+                   function searchTA() {
+                       $("#optionList").html("");
+                       var searchWord = $("#searchWord").val();
+                       var searchData = {'keyword': searchWord};
+                       var flag = 0;
+
+                       $.post("/professorMain/taSearch", searchData, function (data) {
+
+                           if (data == -1) {
+
+                               $("#optionList").append("<option>TA no found: " + searchWord + "</option>");
+
+
+                           } else {
+
+                               $.each(data, function (n, item) {
+                                   flag++;
+                                   $("#optionList").append("<option  value=" + item.id + ">" + item.taName + "</option>");
+                               });
+                           }
+
+
+                       });
+                   }
+
+                     function showTABySearch(csID) {
+                        var searchWord = $("#searchWord").val();
+                        var temp = taID;
+                        taID = searchWord;
+                        seeTAInfo();
+                        taID = temp;
+                   }
+
+        </script>
+
+
+</head>
+<body style="background-color:#333333;">
+<div class="container-fluid" style="height:40%">
+    <nav class="nav navbar-inverse navbar-fixed-top ">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mynav">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index/index.html"><strong>{{ user|default:"Unknown user" }}</strong></a>
+        </div>
+
+
+
+        <div class="collapse navbar-collapse" id="mynav">
+            <ul class="nav navbar-nav" id="bt">
+                <li ><a class="navbar-brand" ><strong data-toggle="modal" data-target="#rankResult">View Rank result</strong></a></li>
+
+
+            </ul>
+                       <div class="collapse navbar-collapse" id="search"  >
+        <div class="input-group" style="width:250px; float:right; margin-top:10px; ">
+<input id="searchWord" type="text" class="form-control input-lg" style="height:30px" onkeyup="searchTA()" placeholder="TA Name" list="optionList">
+                    <datalist id="optionList">
+</datalist>
+                    <span  style="height:30px" class="input-group-addon btn btn-primary" onclick="showTABySearch()" >Search</span>
+</div>
+</div>
+        </div>
+
+    </nav>
+
+</div>
+
+
+	<div class="panel panel-default"style="height:40%">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion"
+				   href="#collapseThree">
+						<span>Engi 5300 Soilds II</span> <span style="color:green">[2/2]</span>
+				</a>
+			</h4>
+		</div>
+		<div id="collapseThree" class="panel-collapse collapse">
+			<div class="panel-body">
+			                <div style="width:33%; float:left">
+                		<div class="list-group row pre-scrollable" style=" width:100%">
+                <a href="#" class="list-group-item list-group-item-action active">
+    TA selected:
+  </a>
+  <a href="#" class="list-group-item list-group-item-action">Rui</a>
+  <a href="#" class="list-group-item list-group-item-action">Susan</a>
+                </div>
+                </div>
+                <div style="width:13%; float:left; height:100%;">
+                <div style="height:33.3%; width:100%;float:left; margin-left:38%; margin-top:3%">
+                <button type="button" class="btn btn-success">Accept</button>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:40%; margin-top:13%">
+                <button type="button" class="btn btn-danger">Deny</button>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:30%; margin-top:13%">
+                <button type="button" onClick="vis()" class="btn btn-primary">Assign other TA</button>
+                </div>
+                </div>
+                <div style="width:33%; float:left">
+                	<div class="list-group row pre-scrollable TAList" style=" width:100%">
+                <a href="#" class="list-group-item list-group-item-action active ">
+    TA list: <div class="input-group" style="width:250px; margin-top:-1%; float:right; ">
+<input type="text" class="form-control input-lg" style="height:30px"  placeholder="TA Name"><span  style="height:30px" class="input-group-addon btn btn-primary" >Search</span>
+</div>
+  </a>
+ <a href="#" class="list-group-item list-group-item-action">Join<button  style=" margin-left:80%" type="button" class="btn btn-success">✓</button></a>
+  <a href="#" class="list-group-item list-group-item-action">Sita<button  style=" margin-left:80%" type="button" class="btn btn-success">✓</button></a>
+  <a href="#" class="list-group-item list-group-item-action">Lize<button  style=" margin-left:80%" type="button" class="btn btn-success">✓</button></a>
+
+                </div>
+                </div>
+			</div>
+		</div>
+	</div>
+
+{% for allTA in allTAList %}
+<div class="modal" id="mymodal{{ allTA.user.id }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">TA profile</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form">
+          <div class="input-group">
+            <span class="input-group-addon">Name</span>
+            <input type="text" class="form-control" placeholder="Name" readonly="true" value="{{allTA.user.first_name}} {{allTA.user.last_name}}">
+        </div>
+        <br>
+
+
+        <div class="input-group">
+            <span class="input-group-addon">Gender</span>
+            <input id="gender{{ allTA.user.id }}" type="text" class="form-control"  readonly="true" value="">
+        </div>
+        <br>
+      <div class="input-group">
+            <span class="input-group-addon">Personal Email</span>
+            <input id="email{{ allTA.user.id }}" type="text" class="form-control" readonly="true" placeholder="Please type your contect email" value="{{ allTA.user.email }}">
+        </div>
+
+        <br>
+         <div class="input-group">
+            <span class="input-group-addon">Personal CV</span>
+
+             <input class="btn btn-success" onclick="window.location.href='{{ allTA.cv.url }}'"  type="button" value="download" >
+        </div>
+        <br>
+
+    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editTAInformation()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<div style="margin-top: 10%;" class="modal fade" id="rankResult" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Ranking result
+				</h4>
+			</div>
+			<div class="modal-body">
+
+                    {% for matchre in matchingResult %}
+                        {% for i in courseList %}
+                            {% ifequal matchre.curriculum_id i.id %}
+                                <div>Course {{ i.subject }}{{ i.courseName }} {{ i.title }} has assigned {{ matchre.TA.user.first_name }} {{ matchre.TA.user.last_name }} as TA</div>
+                            {% endifequal %}
+                         {% endfor %}
+                    {% endfor %}
+
+
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>
+{% endblock %}

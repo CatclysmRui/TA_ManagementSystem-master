@@ -1,0 +1,347 @@
+{% load static %}
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<meta http-equiv="expires" content="-1" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>TA page</title>
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' />
+    <script src='{% static "js/jquery.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+    <script src='{% static "js/jui/jquery-ui.js" %}'></script>
+    <style>
+        .container-fluid{
+            margin-top: 70px;
+        }
+    </style>
+        <script>
+            window.onload = function () {
+
+            }
+
+
+
+            function clickList() {
+
+                $("#mymodal").modal();
+            }
+
+            function searchCourse(){
+                $("#optionList").html("");
+                var searchWord = $("#searchWord").val();
+                var searchData = {'keyword':searchWord};
+                var flag=0;
+                $.post("/taMain/searchCourse",searchData,function(data){
+
+                        if(data==-1){
+
+                            $("#optionList").append("<option>course no found: "+searchWord+"</option>");
+
+
+                        }
+                        else{
+
+                                       $.each(data,function(n,item){
+                             flag++;
+                        $("#optionList").append("<option  value="+item.courseName+">"+item.title+"</option>");
+                   });
+                        }
+
+
+
+
+
+                });
+
+
+
+            }
+
+            function courseShow(){
+                var courseId =0;
+                 courseId = $("#searchWord").val();
+                
+                $("#"+courseId).css("display","block");
+
+            }
+
+            function submitCV(){
+                var formData = new FormData();
+                 formData.append('taCV', $('#taCV')[0].files[0]);
+                $.ajax({
+				url:"{% url 'upload' %}",
+				//请求方式
+				type:"post",
+				//接收服务器返回的数据类型
+				dataType:"text",
+				//获取表单数据
+				data:formData,
+				//禁止ajax设置编码方式
+				contentType:false,
+				//禁止ajax将数据类型转换为字符串
+				processData:false,
+				//请求成功执行回调函数
+				success:function(obj){
+					alert("upload success");
+				},
+				//请求失败
+				error:function(xhr,statustext){
+					alert("error:"+xhr.status+":"+statustext);
+				}
+			})
+
+
+
+
+            }
+
+            function editTAInformation(){
+            var email = $("#taEmail").val();
+            var gender = $("#genderSelection").val();
+            var data = email + "#" + gender;
+            var taData = {'taInformation':data};
+             $.post("/taMain/editTAInformation",taData,function(data){
+
+                });
+          $("#mymodal").modal('hide');
+            }
+
+            function passCourseRank(courseID,rank,cName){
+            var data = {'courseID':courseID,'courseRank':rank};
+            $.post("/taMain/passTASelection",data,function(data){
+
+                });
+            if(rank==0){
+             $("#"+cName).css("display","none");
+
+            }
+            }
+        </script>
+
+
+</head>
+<body style="background-color:#333333;">
+<div class="container-fluid" style="height:40%">
+    <nav class="nav navbar-inverse navbar-fixed-top ">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mynav">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index/index.html"><strong>{{ user|default:"Unknown user" }}</strong></a>
+        </div>
+
+
+
+        <div class="collapse navbar-collapse" id="mynav">
+            <ul class="nav navbar-nav" id="bt">
+                <li ><a   onClick="clickList()" href="#"><strong>TA profile</strong> </a></li>
+
+
+            </ul>
+                       <div class="collapse navbar-collapse" id="search"  >
+        <div class="input-group" style="width:250px; float:right; margin-top:10px; ">
+            <input id="searchWord" type="text" class="form-control input-lg dropdown-toggle" data-toggle="dropdown" style="height:30px"  placeholder="Course Name" onkeyup="searchCourse()" list="optionList">
+<datalist id="optionList">
+
+</datalist>
+            <span  style="height:30px" class="input-group-addon btn btn-primary" onclick="courseShow()" >Add</span>
+</div>
+</div>
+        </div>
+
+    </nav>
+
+</div>
+{%if selectCourseId %}
+ {% for cL in courseList %}
+     {% for sL in selectCourseId %}
+         {% ifequal cL.id sL.curriculum_id %}
+<div id="{{cL.courseName}}"  style="display: block" class="panel-group" id="accordion">
+         {% else %}
+<div id="{{cL.courseName}}"  style="display: none" class="panel-group" id="accordion">
+         {% endifequal %}
+     {% endfor %}
+	<div class="panel panel-default" style="height:40%">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion"
+				   href="#collapseOne{{cL.id}}">
+					<span>{{cL.subject}}{{cL.courseName}} {{cL.title}}</span> <span style="color:green">[0/2]</span> <a style="color:blue" href="www.baidu.com">Detail</a>
+				</a>
+			</h4>
+		</div>
+		<div id="collapseOne{{cL.id}}" class="panel-collapse collapse in">
+			<div class="panel-body">
+
+                <div style="width:33%; float:left">
+                		<div class="list-group row pre-scrollable" style=" width:100%">
+
+                </div>
+                </div>
+                    <div style="width:13%; float:left; height:100%;">
+                <div style="height:33.3%; width:100%;float:left; margin-left:38%; margin-top:3%">
+                     <div class="input-group">
+            <span class="input-group-addon">Rank:</span>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},1,{{cL.courseName}})">1</button>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},2,{{cL.courseName}})">2</button>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},3,{{cL.courseName}})">3</button>
+        </div>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:50%; margin-top:13%">
+                <button type="button" class="btn btn-danger" onclick="passCourseRank({{cL.id}},0,{{cL.courseName}})">Delete from list</button>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:30%; margin-top:13%">
+
+                </div>
+                </div>
+
+                </div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+{%  else %}
+ {% for cL in courseList %}
+
+
+
+
+<div id="{{cL.courseName}}"  style="display: none" class="panel-group" id="accordion">
+
+
+	<div class="panel panel-default" style="height:40%">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion"
+				   href="#collapseOne{{cL.id}}">
+					<span>{{cL.subject}}{{cL.courseName}} {{cL.title}}</span> <span style="color:green">[0/2]</span> <a style="color:blue" href="www.baidu.com">Detail</a>
+				</a>
+			</h4>
+		</div>
+		<div id="collapseOne{{cL.id}}" class="panel-collapse collapse in">
+			<div class="panel-body">
+
+                <div style="width:33%; float:left">
+                		<div class="list-group row pre-scrollable" style=" width:100%">
+
+                </div>
+                </div>
+                    <div style="width:13%; float:left; height:100%;">
+                <div style="height:33.3%; width:100%;float:left; margin-left:38%; margin-top:3%">
+                     <div class="input-group">
+            <span class="input-group-addon">Rank:</span>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},1,{{cL.courseName}})">1</button>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},2,{{cL.courseName}})">2</button>
+                         <button class="btn btn-default" type="button" onclick="passCourseRank({{cL.id}},3,{{cL.courseName}})">3</button>
+        </div>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:50%; margin-top:13%">
+                <button type="button" class="btn btn-danger" onclick="passCourseRank({{cL.id}},0,{{cL.courseName}})">Delete from list</button>
+                </div>
+                <div style="height:33.3%;width:100%;float:left;margin-left:30%; margin-top:13%">
+
+                </div>
+                </div>
+
+                </div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+{%endif%}
+
+
+<div class="modal" id="mymodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">TA profile</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form">
+          <div class="input-group">
+            <span class="input-group-addon">Name</span>
+            <input type="text" class="form-control" placeholder="Name" readonly="true" value="{{userList.first_name}} {{userList.last_name}}">
+        </div>
+        <br>
+        <div class="input-group">
+            <span class="input-group-addon">Gender</span>
+            <select  id="genderSelection" type="text" class="form-control" placeholder="Gender" >
+             {% if gender == 1 %}
+                 <option value="1"  selected="selected">male</option>
+                   <option value="2">female</option>
+                 {% else %}
+              <option value="1"  >male</option>
+                   <option value="2" selected="selected">female</option>
+            {% endif %}
+            </select>
+        </div>
+        <br>
+      <div class="input-group">
+            <span class="input-group-addon">Personal Email</span>
+            <input id="taEmail" type="text" class="form-control" placeholder="Please type your contect email" value="{{email}}">
+        </div>
+        <br>
+         <div class="input-group">
+            <span class="input-group-addon">Personal CV</span>
+             <form id="cvUpdate" >
+                    <input id="taCV" class="btn btn-primary" type="file" name="taCV">
+                     </form>
+             <input class="btn btn-success" type="button" value="upload" onclick="submitCV()">
+        </div>
+        <br>
+         <div class="input-group">
+            <span class="input-group-addon">View ranking result</span>
+           <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#rankResult">View</button>
+        </div>
+    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editTAInformation()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-top: 10%;" class="modal fade" id="rankResult" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Ranking result
+				</h4>
+			</div>
+			<div class="modal-body">
+                {% if matchingResult %}
+                    {% for matchre in matchingResult %}
+                        {% for i in courseList %}
+                            {% ifequal matchre.curriculum_id i.id %}
+                                <span>You have assigned to {{ i.subject }}{{ i.courseName }} {{ i.title }}</span>
+                            {% endifequal %}
+                         {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <span>You are not assign to any course</span>
+                {% endif %}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>
+{% endblock %}

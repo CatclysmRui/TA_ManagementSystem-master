@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TA Management System</title>
+</head>
+<body>
+{% block nav %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="{% static 'js/dragEvent.js' %}"></script>
+
+{% block javascript %}
+{% endblock %}
+</body>
+</html>

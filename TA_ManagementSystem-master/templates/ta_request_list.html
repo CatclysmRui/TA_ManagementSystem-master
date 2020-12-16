@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>TA request list</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>course subject</th>
+            <th>course name</th>
+            <th>instructor</th>
+            <th>email</th>
+            <th>recommended TA positions</th>
+            <th>view details/duties</th>
+            <th>options</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in taduty %}
+            <tr>
+                <td>{{ row.curriculum.subject }}&nbsp;{{ row.curriculum.courseName }}</td>
+                <td>{{ row.curriculum.title }}</td>
+                <td>{{ row.curriculum.instructor.user.first_name }}&nbsp;{{ row.curriculum.instructor.user.last_name }}</td>
+                <td>{{ row.curriculum.instructor.user.email }}</td>
+                <td id="{{ row.id }}" contenteditable="false">{{ row.recommendedTANumber }}</td>
+                <td><a href="javascript:void(0)" onclick="floatWindow({{ row.curriculum.id }})">view detail/duties</a>
+                </td>
+                <td><a id="{{ row.id }}edit" href="javascript:void(0)" onclick="editable({{ row.id }}, {{ row.id }}+'edit', {{ row.id }}+'save')">edit</a>
+                    <span id="{{ row.id }}save" class="save"><a href="javascript:void(0)" onclick="cancel({{ row.recommendedTANumber }},{{ row.id }},{{ row.id }}+'edit',{{ row.id }}+'save')">cancel |</a>
+                    <a href="javascript:void(0)" onclick="save({{ row.id }},{{ row.id }}+'edit',{{ row.id }}+'save')">save |</a></span>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div id="light" class="white_content">
+        <a id="close" href="javascript:void(0)" onclick="closeItem()">close</a>
+        <p id="insert"></p>
+    </div>
+    <div id="fade" class="black_overlay"></div><br>
+{% endblock %}
+
+
+

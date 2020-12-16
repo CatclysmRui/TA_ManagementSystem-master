@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% if request.session.username %}
+    <p>Hi {{ request.session.username }}!</p>
+    <nav class="menu">
+        <ul>
+            {% for character in request.session.role %}
+                {% if character == 'instructor' %}
+                    <li>
+                            <a href="{% url 'course_list' id=user.id %}">course list</a>
+                    </li>
+                {% elif character == 'TA' %}
+                    <li>
+
+                            <a href="{% url 'select_course_list' %}">select course</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'upload' %}">upload cv</a>
+                    </li>
+                {% elif character == 'departmenthead' %}
+                    <li>
+                        <a href="{% url 'ta_request_list' %}">TA request list</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'recommended_allocation' %}">TA allocation result</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li>
+                <a href="{% url 'logout' %}">logout</a>
+            </li>
+        </ul>
+    </nav>
+{% else %}
+    <p>please login the system</p>
+    <a href="{% url 'login' %}">login</a>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>duties and details for TA</h1>
+    <p>#student:{{ course.capacity }}</p>
+    <table>
+        <thead>
+        <tr>
+            <th>classification</th>
+            <th>times</th>
+            <th>teaching activity</th>
+            <th>Approx. hours/student</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td rowspan="3">Lab</td>
+            <td rowspan="3">{{ taDuty.labNumber }}</td>
+            <td>preparation</td>
+            <td>{{ taDuty.preparationHour }}</td>
+        </tr>
+        <tr>
+            <td>lab time</td>
+            <td>{{ taDuty.labHour }}</td>
+        </tr>
+        <tr>
+            <td>working</td>
+            <td>{{ taDuty.labWorkingHour }}</td>
+        </tr>
+        <tr>
+            <td>Assignment</td>
+            <td>{{ taDuty.assignmentNumber }}</td>
+            <td>working</td>
+            <td>{{ taDuty.assignmentWorkingHour }}</td>
+        </tr>
+        <tr>
+            <td rowspan="2">Others</td>
+            <td rowspan="2"></td>
+            <td>contact hour</td>
+            <td>{{ taDuty.contactHour }}</td>
+        </tr>
+        <tr>
+            <td>other duties</td>
+            <td>{{ taDuty.otherDutiesHour }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>total hours:{{ taDuty.totalHour }}h</p>
+    <p>recommended TA numbers: {{ taDuty.recommendedTANumber }}&nbsp;position(s)</p>
+    <button type="button"><a href="{% url 'duty_edit' id=course.id %}">modification</a></button>
+    <button type="button"><a href="{% url 'course_list' id=course.instructor.user.id %}">back</a></button>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>TA position allocation</h1>
+    <form name="resultForm" method="post" action="{% url 'download_excel_data' %}">
+        {% csrf_token %}
+        <table>
+            <thead>
+            <tr>
+                <th><input type="checkbox"></th>
+                <th>term</th>
+                <th>course subject</th>
+                <th>course name</th>
+                <th>instructor</th>
+                <th>TA position(s)</th>
+                <th>student(s)</th>
+                <th>student e-mail</th>
+                <th>cv</th>
+                <th>status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in matchingResult %}
+                <tr>
+                    <td><input type="checkbox"></td>
+                    {% if result.curriculum.semester == '201901' %}
+                        <td>fall 2019</td>
+                    {% elif result.curriculum.semester == '201902' %}
+                        <td>winder 2020</td>
+                    {% elif result.curriculum.semester == '201903' %}
+                        <td>spring 2020</td>
+                    {% endif %}
+                    <td>{{ result.curriculum.subject }}&nbsp;{{ result.curriculum.courseName }}</td>
+                    <td>{{ result.curriculum.title }}</td>
+                    <td>{{ result.curriculum.instructor.user.first_name }}&nbsp;{{ result.curriculum.instructor.user.last_name }}</td>
+                    <td>{{ result.positions }}</td>
+                    <td>{{ result.TA.user.first_name }}&nbsp;{{ result.TA.user.last_name }}</td>
+                    <td>{{ result.TA.user.email }}</td>
+                    <td><a href="{{ result.TA.cv.url }}">cv link</a></td>
+                    <td>
+                        <select class="select-option" name="drop" onchange="setStatus()">
+                            <option value="{{ result.id }}-approved">approved</option>
+                            <option value="{{ result.id }}-rejected">rejected</option>
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p>total number of TA request: {{ count }}</p>
+        <label><input id="statusResult" type="text" name="status" size="40" hidden></label>
+        <button type="submit">download</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,367 @@
+{% load static %}
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<meta http-equiv="expires" content="-1" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Professor page</title>
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' />
+    <script src='{% static "js/jquery.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+    <script src='{% static "js/jui/jquery-ui.js" %}'></script>
+       <style>
+        .container-fluid{
+            margin-top: 70px;
+        }
+    </style>
+        <script>
+        var taID;
+        var taSelectID;
+
+        $(document).ready(function(){
+        setInitTA();
+});
+
+        function setTAID(id){
+            taID = id;
+        }
+
+        function setTASelectID(id){
+            taSelectID = id;
+        }
+
+        function seeTAInfo(){
+            var emailInfo = $("#email"+taID).val();
+           genderArray =  emailInfo.split("#");
+           $("#email"+taID).val(genderArray[0]);
+           if(genderArray[1]==1){
+                gender = "male"
+           }
+           else{
+               gender = "fmale"
+           }
+           $("#gender"+taID).val(gender);
+            $("#mymodal"+taID).modal();
+
+        }
+
+                   function searchTA(csID) {
+                       $("#optionList"+csID).html("");
+                       var searchWord = $("#searchWord"+csID).val();
+                       var searchData = {'keyword': searchWord};
+                       var flag = 0;
+
+                       $.post("/professorMain/taSearch", searchData, function (data) {
+
+                           if (data == -1) {
+
+                               $("#optionList"+csID).append("<option>TA no found: " + searchWord + "</option>");
+
+
+                           } else {
+
+                               $.each(data, function (n, item) {
+                                   flag++;
+                                   $("#optionList"+csID).append("<option  value=" + item.id + ">" + item.taName + "</option>");
+                               });
+                           }
+
+
+                       });
+                   }
+
+                   function showTABySearch(csID) {
+                        var searchWord = $("#searchWord"+csID).val();
+                        var temp = taID;
+                        taID = searchWord;
+                        seeTAInfo();
+                        taID = temp;
+                   }
+
+                   function selectTAToList() {
+
+                    for (i=1;i<=3;i++){
+                        if ($("#taSelectText"+i).text()== $("#taListID"+taID).text()){
+                            alert("The course has been selected");
+                            return;
+                        }
+                        if ($("#taSelectText"+i).text() == "notSelected"){
+                            $("#taSelectID"+i).text(taID);
+                            $("#taSelectText"+i).text($("#taListID"+taID).text());
+                            submitList();
+                            return;
+                        }
+                    }
+
+                   }
+
+                   function deleteTAFromList() {
+                        $("#taSelectText"+taSelectID).text("notSelected");
+                        $("#taSelectID"+taSelectID).text("-1");
+                        submitList();
+                   }
+                   
+                   function taListMoveDown(id){
+                    var tempID;
+                    var tempText;
+                    tempID = $("#taSelectID"+(id+1)).text();
+                    tempText = $("#taSelectText"+(id+1)).text();
+                    $("#taSelectID"+(id+1)).text( $("#taSelectID"+id).text());
+                    $("#taSelectText"+(id+1)).text($("#taSelectText"+id).text());
+                    $("#taSelectID"+id).text(tempID);
+                    $("#taSelectText"+id).text(tempText);
+                    submitList();
+                   }
+                   
+                   function taListMoveUp(id) {
+                        var tempID;
+                        var tempText;
+                        tempID = $("#taSelectID"+(id-1)).text();
+                        tempText = $("#taSelectText"+(id-1)).text();
+                        $("#taSelectID"+(id-1)).text( $("#taSelectID"+id).text());
+                        $("#taSelectText"+(id-1)).text($("#taSelectText"+id).text());
+                        $("#taSelectID"+id).text(tempID);
+                        $("#taSelectText"+id).text(tempText);
+                        submitList();
+
+                   }
+
+                   function submitList(){
+                       var taID = new Array();
+                       var taRank = new Array();
+                       var courseID = new Array();
+                       var flag =0;
+                       for (i=1;i<=3;i++){
+                           var csName = $("#taSelect"+i).parent().attr("id");
+                           courseID[flag] = csName;
+                           taRank[flag] = i;
+                           if ($("#taSelectText"+i).text() != "notSelected"){
+                               var id = $("#taSelectID"+i).text();
+
+                               taID[flag] = id;
+
+
+
+                           }
+                           else{
+                                taID[flag] = -1;
+
+
+                           }
+                           flag++;
+                       }
+
+                       if (flag>0){
+                              $.post("/professorMain/passCourseSelection",{'taID': taID,'taRank': taRank,'courseID':courseID},function(data){
+
+                });
+                       }
+
+                   }
+
+                   function collspseControl(id) {
+
+                    $("#"+id).on('hidden.bs.collapse', function () {
+                         $("#"+id).css('display','none');
+})
+                    $('#'+id).on('show.bs.collapse', function () {
+    $("#"+id).css('display','block');
+    setInitTA();
+})
+                   }
+                   function setInitTA(){
+            for (i=1;i<=3;i++){
+               var id = $("#taSelectID"+i).text();
+                if (id!="") {
+                    $("#taSelectText" + i).text($("#taListID" + id).text());
+                }
+                else {
+                      $("#taSelectText" + i).text("notSelected");
+                }
+            }
+                   }
+        </script>
+
+
+</head>
+<body style="background-color:#333333;">
+<div class="container-fluid" style="height:40%">
+    <nav class="nav navbar-inverse navbar-fixed-top ">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mynav">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="../index/index.html"><strong>{{ user|default:"Unknown user" }}</strong></a>
+        </div>
+
+
+
+        <div class="collapse navbar-collapse" id="mynav">
+            <ul class="nav navbar-nav" id="bt">
+                <li >  <a class="navbar-brand" ><strong data-toggle="modal" data-target="#rankResult">View Rank result</strong></a></li>
+
+
+            </ul>
+
+</div>
+
+
+    </nav>
+
+</div>
+<div id="collspseControler">
+{% for cL in teacherCourse %}
+<div class="panel-group" id="{{cL.courseName}}">
+	<div class="panel panel-default" style="height:40%">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#collspseControler"
+				   href="#collapseOne{{cL.id}}" onclick="collspseControl('collapseOne'+{{cL.id}})">
+					<span>{{cL.subject}}{{cL.courseName}} {{cL.title}}</span> <span style="color:red">[0/2]</span> <a style="color:blue" href="www.baidu.com">edit</a>
+				</a>
+			</h4>
+		</div>
+		<div id="collapseOne{{cL.id}}" class="panel-collapse collapse in">
+			<div class="panel-body">
+
+                <div style="width:33%; float:left">
+                		<div id="{{ cL.courseName }}" class="list-group row pre-scrollable"  style=" width:100%">
+                <a href="#" class="list-group-item list-group-item-action active">
+    TA selected:
+
+
+
+                    <a id="taSelect1" onclick="setTASelectID(1)" href="#" class="list-group-item list-group-item-action"><span style="display:inline-block;width: 20%" id="taSelectText1"></span><button class="btn btn-primary" style="margin-left: 60%" onclick="taListMoveDown(1)">↓</button><span id="taSelectID1" style="width: 1px; visibility: hidden">{% for slTA in selectedTA %}{% ifequal cL.id slTA.curriculum_id %}{% if slTA.ranking == 1 %}{{ slTA.TA.user.id }}{% endif %}{% endifequal %}{% endfor %}</span></a>
+                      <a id="taSelect2" onclick="setTASelectID(2)" href="#" class="list-group-item list-group-item-action"><span style="display:inline-block;width: 20%" id="taSelectText2"></span><button class="btn btn-success" style="margin-left: 60%" onclick="taListMoveUp(2)">↑</button> <button class="btn btn-primary" onclick="taListMoveDown(2)">↓</button><span id="taSelectID2" style="width: 1px; visibility: hidden">{% for slTA in selectedTA %}{% ifequal cL.id slTA.curriculum_id %}{% if slTA.ranking == 2 %}{{ slTA.TA.user.id }}{% endif %}{% endifequal %}{% endfor %}</span></a>
+                    <a id="taSelect3" onclick="setTASelectID(3)" href="#" class="list-group-item list-group-item-action"><span style="display:inline-block;width: 20%" id="taSelectText3"></span><button class="btn btn-success" style="margin-left: 60%" onclick="taListMoveUp(3)">↑</button> <span id="taSelectID3" style="width: 1px; visibility: hidden">{% for slTA in selectedTA %}{% ifequal cL.id slTA.curriculum_id %}{% if slTA.ranking == 3 %}{{ slTA.TA.user.id }}{% endif %}{% endifequal %}{% endfor %}</span></a>
+
+
+                    </a>
+
+                </div>
+                </div>
+                <div style="width:13%; float:left; height:100%;">
+                <div style="height:50%; width:100%;float:left; margin-left:40%; margin-top:3%">
+                <button type="button" class="btn btn-success" onclick="selectTAToList()"><<</button>
+                </div>
+                <div style="height:50%;width:100%;float:left;margin-left:40%; margin-top:13%">
+                <button type="button" class="btn btn-primary" onclick="deleteTAFromList()">>></button>
+                </div>
+                    <div style="height:50%;width:100%;float:left;margin-left:37%; margin-top:13%">
+                <button type="button" class="btn btn-info" onclick="seeTAInfo()">detail</button>
+                </div>
+                </div>
+                <div style="width:33%; float:left">
+                	<div class="list-group row pre-scrollable" style=" width:100%">
+                <a href="#" class="list-group-item list-group-item-action active ">
+    TA list: <div class="input-group" style="width:250px; margin-top:-1%; float:right; ">
+<input id="searchWord{{cL.id}}" type="text" class="form-control input-lg" style="height:30px" onkeyup="searchTA({{cL.id}})" placeholder="TA Name" list="optionList{{cL.id}}">
+                    <datalist id="optionList{{cL.id}}">
+</datalist>
+                    <span  style="height:30px" class="input-group-addon btn btn-primary" onclick="showTABySearch({{cL.id}})" >Search</span>
+</div>
+  </a>
+
+                            {% for allTA in allTAList %}
+
+                             <a id="taListID{{ allTA.user.id }}" onclick="setTAID({{ allTA.user.id }})" href="#" class="list-group-item list-group-item-action">{{ allTA.user.first_name }}</a>
+
+
+                        {% endfor %}
+                </div>
+                </div>
+                </div>
+			</div>
+		</div>
+	</div>
+{% endfor %}
+</div>
+{% for allTA in allTAList %}
+<div class="modal" id="mymodal{{ allTA.user.id }}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">TA profile</h4>
+            </div>
+            <div class="modal-body">
+                <form class="bs-example bs-example-form" role="form">
+          <div class="input-group">
+            <span class="input-group-addon">Name</span>
+            <input type="text" class="form-control" placeholder="Name" readonly="true" value="{{allTA.user.first_name}} {{allTA.user.last_name}}">
+        </div>
+        <br>
+
+
+        <div class="input-group">
+            <span class="input-group-addon">Gender</span>
+            <input id="gender{{ allTA.user.id }}" type="text" class="form-control"  readonly="true" value="">
+        </div>
+        <br>
+      <div class="input-group">
+            <span class="input-group-addon">Personal Email</span>
+            <input id="email{{ allTA.user.id }}" type="text" class="form-control" readonly="true" placeholder="Please type your contect email" value="{{ allTA.user.email }}">
+        </div>
+
+        <br>
+         <div class="input-group">
+            <span class="input-group-addon">Personal CV</span>
+
+             <input class="btn btn-success" onclick="window.location.href='{{ allTA.cv.url }}'"  type="button" value="download" >
+        </div>
+        <br>
+         <div class="input-group">
+            <span class="input-group-addon">Pervious TA History</span>
+           <button class="btn btn-primary" type="button">View</button>
+        </div>
+    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="editTAInformation()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<div style="margin-top: 10%;" class="modal fade" id="rankResult" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					Ranking result
+				</h4>
+			</div>
+			<div class="modal-body">
+
+                    {% for matchre in matchingResult %}
+                        {% for i in teacherCourse %}
+                            {% ifequal matchre.curriculum_id i.id %}
+                                <div>You course {{ i.subject }}{{ i.courseName }} {{ i.title }} has assigned {{ matchre.TA.user.first_name }} {{ matchre.TA.user.last_name }} as TA</div>
+                            {% endifequal %}
+                         {% endfor %}
+                    {% endfor %}
+
+
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>
+{% endblock %}

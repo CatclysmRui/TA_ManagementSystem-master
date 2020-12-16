@@ -1,0 +1,4 @@
+venv
+.idea
+get-pip.py
+__pycache__

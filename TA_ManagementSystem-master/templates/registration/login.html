@@ -1,0 +1,128 @@
+
+{% load static %}
+
+
+
+<html>
+<head>
+<meta charset="utf-8">
+<title>TA Manage System Login</title>
+
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' />
+    <script src='{% static "js/jquery.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+    <script src='{% static "js/jui/jquery-ui.js" %}'></script>
+
+<style>
+body{
+    font-family: "Avenir LT W01 45 Book", Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+.margin-right{
+    margin-right: 10px;
+}
+
+.schoollogo span
+{
+    display: block;
+    background: url({% static "pic/mun-logo.png" %}) 0 0 no-repeat;
+    background-size: 560px auto;
+    height: 80px;
+    width: 130px;
+    margin: 10px auto;
+}
+
+
+
+</style>
+
+<script>
+    function sub() {
+
+        $("#userName").val($("#username").val());
+        $("#passWord").val($("#password").val()) ;
+        $("#readySubmit").click();
+    }
+
+</script>
+</head>
+
+<body>
+<div class="schoollogo" style="height:201px">
+<div class="row">
+<div class="col-md-12">
+                <div class="text-center">
+                   <span></span>
+                </div>
+                <h1 class="text-center">TA Manage System Login</h1>
+            </div>
+</div>
+</div>
+
+
+<!--mid start !-->
+<div class="cotainer" >
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+
+      <div class="well" style="position: absolute;left: 0;right: 0;margin:  auto ;width:50%;">
+
+        <form id="loginform" action="" method="post">
+
+          <div class="form-group">
+
+
+          <section>
+            <label for="username">Login ID</label>
+  <input id="username" name="username" class="required form-control" tabindex="1" accesskey="u" type="text" value="" size="25" autocomplete="off">
+
+          </section>
+
+          </div>
+
+          <div class="form-group">
+
+            <section>
+              <label for="password">Password</label>
+
+
+              <input id="password" name="password" class="required form-control" tabindex="2" accesskey="p" type="password" value="" size="25" autocomplete="off">
+            </section>
+
+          </div>
+
+
+          <div class="form-group">
+            <section class="btn-row">
+
+              <input class="btn-submit btn btn-primary btn-block" name="submit" accesskey="l"  onclick="sub()" tabindex="4" value="Login in" >
+
+            </section>
+          </div>
+        </form>
+
+
+        <div class="clearfix"></div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+<!--mid end!-->
+    <form style="visibility: hidden" id="formSubmit" method="post" action="{% url 'login' %}" name="loginForm" onsubmit="return validateForm()">
+    {% csrf_token %}
+    <p>
+        <label>username:<input id="userName" type="text" name="username"><span id="invalid1"></span></label>
+    </p>
+    <p>
+        <label>password:<input id="passWord" type="password" name="password"><span id="invalid2"></span></label>
+    </p>
+    <button id="readySubmit" type="submit">Login</button>
+</form>
+</body>
+
+
+</html>

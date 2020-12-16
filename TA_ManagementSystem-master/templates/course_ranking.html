@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>course ranking result</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ranking</th>
+            <th>course subject</th>
+            <th>course name</th>
+            <th>instructor</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rank in ranking %}
+            <tr>
+                <td>{{ rank.ranking }}</td>
+                <td>{{ rank.curriculum.subject }}&nbsp;{{ rank.curriculum.courseName }}</td>
+                <td>{{ rank.curriculum.title }}</td>
+                <td>{{ rank.curriculum.instructor.user.first_name }}&nbsp;{{ rank.curriculum.instructor.user.last_name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

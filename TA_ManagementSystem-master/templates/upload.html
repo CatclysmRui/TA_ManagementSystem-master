@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>upload cv</h1>
+    <h3>please concentrate on your previous experience about being a TA or other academical activities in your
+        cv...</h3>
+    <form method="post" enctype="multipart/form-data" action="{% url 'upload' %}">
+        {% csrf_token %}
+        <input type="file" name="myfile"><br>
+        <input type="submit" value="upload">
+    </form>
+{% endblock %}

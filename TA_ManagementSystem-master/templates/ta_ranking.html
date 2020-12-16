@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>TA ranking result</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>ranking</th>
+            <th>student name</th>
+            <th>email</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rank in ranking %}
+            <tr>
+                <td>{{ rank.ranking }}</td>
+                <td>{{ rank.TA.user.first_name }}&nbsp;{{ rank.TA.user.last_name }}</td>
+                <td>{{ rank.TA.user.email }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button><a href="{% url 'course_list' id=user_id %}">back</a></button>
+{% endblock %}
